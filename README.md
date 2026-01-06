@@ -1,149 +1,187 @@
-# Life Compass
+# Life Compass API
 
-Life Compass is a **FastAPI-based backend project** that generates an explainable **purpose and development profile** using precise astronomical calculations of lunar nodes.
+**Life Compass** is a **FastAPI-based backend service** that generates a structured personal development profile using precise astronomical calculations of lunar nodes.
 
-The goal of the project is **not astrology as belief**, but an engineering-style experiment:
-translating **astronomical node positions** into structured life-direction logic — with all calculations deterministic, transparent, and defensible at interview level.
+The project is designed as a **production-style REST API** and demonstrates skills required for the US market:
 
----
-
-## ✨ Key Features
-
-* **FastAPI backend** with clean, modular architecture
-* **Swiss Ephemeris (pyswisseph)** as the single source of astronomical truth
-* Deterministic calculations (no randomization, no tables by date)
-* Explainable business logic layered on top of raw astronomical data
-* Portfolio-level backend project
+* backend service design
+* FastAPI & Pydantic
+* object-oriented business logic
+* logging and error handling
+* clean Python project structure
 
 ---
 
-## 🧠 What the API Calculates
+## Project Purpose
 
-Based on **date, time, and place of birth**, the service computes:
+The service accepts a date, time, and place of birth and calculates:
 
-* ☋ **South Node** – habitual patterns and comfort zone
-* ☊ **North Node** – development vector and growth direction
-* ♈ **Node sign axis** – qualitative direction of growth
-* 🏠 **Node house axis** – life areas where purpose is lived
+* ☋ **South Lunar Node** — habitual patterns and comfort zone
+* ☊ **North Lunar Node** — growth direction and development vector
+* sign axis and house axis of the lunar nodes
+* a structured, explainable transition profile
 
-Only lunar nodes are used.
-No aspects. No additional planets.
-All calculations are performed via **Swiss Ephemeris**, not simplified tables.
+All calculations are **deterministic**, transparent, and based on astronomical data — no randomness or simplified lookup tables.
 
 ---
 
-## 🧩 Purpose Model
+## API Capabilities
 
-The purpose profile is built as a clear axis:
-
-1. **South Node sign** → default strategies and familiar behavior
-2. **South Node house** → where these patterns usually play out
-3. **North Node sign** → qualities to consciously develop
-4. **North Node house** → life domain where growth happens
-
-The result focuses on:
-
-* transition logic (from → to)
-* growth recommendations
-* risks of staying in autopilot
-* human-readable explanation
+* REST API built with FastAPI
+* Automatic Swagger documentation (`/docs`)
+* Input validation using Pydantic models
+* Business logic encapsulated in a dedicated service class (OOP)
+* Request, error, and process logging
+* Integration with external data sources (coordinates, time zones)
 
 ---
 
-## 🚀 Getting Started
+## Project Structure
 
-### Requirements
+```
+LifeCompass/
+├─ app/
+│  ├─ api/              # FastAPI routes
+│  ├─ services/         # Astronomical calculations & business logic
+│  ├─ schemas/          # Pydantic models
+│  ├─ core.py           # Business logic service class
+│  ├─ logger.py         # Logging configuration
+│  ├─ config.py         # Application settings
+│  └─ main.py           # FastAPI application
+├─ data/                # Places and coordinates data
+├─ logs/                # Service logs
+├─ run.py               # Application entry point
+├─ requirements.txt
+├─ README.md
+└─ .gitignore
+```
 
-* Python **3.12.x** (required)
-* Windows OS
+> The project structure is functionally equivalent to the reference structure from the technical assignment
+> (`app.py`, `core.py`, `schemas.py`, `logger.py`, `config.py`, `utilities.py`),
+> organized as a Python package for better scalability.
 
-### Installation
+---
+
+##  Installation
+
+1. Clone the repository
+2. Create a virtual environment:
 
 ```bash
 python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
 ```
 
-### Run the Server
+3. Activate the environment:
+
+**Windows**
 
 ```bash
-python -m uvicorn app.main:app --reload
+.venv\Scripts\activate
 ```
 
-Open:
+**macOS / Linux**
 
+```bash
+source .venv/bin/activate
 ```
-http://127.0.0.1:8000/docs
+
+4. Install dependencies:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
-## 📥 API Example
+##  Running the Server
 
-### Request
+```bash
+python run.py
+```
+
+After startup, open:
+
+* Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+## 🔌 API Endpoints
+
+* **GET /** — service status
+* **GET /health** — health check
+* **POST /profile** — generate Life Compass profile
+* **GET /profile/place?q=...** — resolve place (coordinates and timezone)
+
+---
+
+## Request Examples
+
+### POST /profile
 
 ```json
 {
   "birth_date": "1995-11-18",
   "birth_time": "14:30",
-  "birth_place": "Minsk, Belarus"
+  "birth_place": "Minsk"
 }
 ```
 
-### Response (example)
+### Example Response
 
 ```json
 {
-  "title": "Sagittarius South Node (9th House) → Gemini North Node (3rd House)",
-  "bridge": "From absolute truth → to dialogue.",
-  "sections": [
-    {
-      "focus": "☋ South Node in Sagittarius",
-      "meaning": "A tendency toward certainty, teaching others, and abstract worldview thinking."
-    },
-    {
-      "focus": "☋ South Node in the 9th House",
-      "meaning": "Living through beliefs, ideologies, and theoretical frameworks.",
-      "direction": "from certainty → to curiosity"
-    },
-    {
-      "focus": "☊ North Node in Gemini",
-      "meaning": "Growth through listening, asking questions, and exchanging perspectives."
-    },
-    {
-      "focus": "☊ North Node in the 3rd House",
-      "meaning": "Development unfolds through communication, learning, and everyday dialogue.",
-      "direction": "from monologue → to conversation"
-    }
-  ],
-  "recommendations": [
-    "Practice curiosity instead of certainty.",
-    "Develop growth through communication and learning.",
-    "Notice when abstract beliefs replace real dialogue.",
-    "Keep the core transition in mind."
-  ],
-  "motto": "Truth is born in dialogue."
+  "title": "Sagittarius South Node → Gemini North Node",
+  "bridge": "From absolute truth → to dialogue",
+  "sections": [...],
+  "recommendations": [...],
+  "motto": "Truth is born in dialogue"
 }
 ```
 
 ---
 
-## 🏗 Architecture Overview
+### GET /profile/place
 
 ```
-LifeCompass/
-├─ app/
-│  ├─ api/            # FastAPI routes
-│  ├─ services/       # Astronomical calculations & purpose logic
-│  ├─ schemas/        # Pydantic models
-│  └─ main.py
-├─ data/              # Places and coordinates
-└─ requirements.txt
+/profile/place?q=Minsk
+```
+
+Response:
+
+```json
+{
+  "query": "Minsk",
+  "lat": 53.9,
+  "lon": 27.56,
+  "timezone": "Europe/Minsk"
+}
 ```
 
 ---
 
-## 📄 License
+## Logging
 
-MIT
+The service uses structured logging:
+
+* console output
+* file logging to `logs/service.log`
+* log levels: `INFO`, `WARNING`, `ERROR`
+
+The following events are logged:
+
+* service startup
+* incoming HTTP requests
+* key calculation steps
+* errors and exceptions
+
+---
+
+## Health & Verification
+
+* The server starts using `python run.py`
+* All endpoints are available via Swagger
+* Logs are written to both console and `logs/service.log`
+
+---
+
+
